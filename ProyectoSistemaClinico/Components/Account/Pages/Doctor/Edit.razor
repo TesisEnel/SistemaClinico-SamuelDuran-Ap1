@@ -1,0 +1,109 @@
+﻿@page "/editardoctor/{DoctorId:int}"
+@using ProyectoSistemaClinico.Models
+@using ProyectoSistemaClinico.Services
+@inject NavigationManager NavigationManager
+@inject DoctorService DoctorService
+
+@rendermode InteractiveServer
+<EditForm Model="doctor" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="card-header text-center bg-primary">
+        <h3 class="text-white"><strong>Editar Doctores</strong></h3>
+    </div>
+
+    <div class="card">
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <label class="fw-bold">Nombre Completo:</label>
+                    <InputText class="form-control" @bind-Value="doctor.NombreCompleto"></InputText>
+                    <ValidationMessage For="@(() => doctor.NombreCompleto)" />
+                </div>
+                <div class="col-6">
+                    <label class="fw-bold">Especialidad Médica:</label>
+                    <InputText class="form-control" @bind-Value="doctor.EspecialidadMedica"></InputText>
+                    <ValidationMessage For="@(() => doctor.EspecialidadMedica)" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <label class="fw-bold">Horario de Disponibilidad:</label>
+                    <InputText class="form-control" @bind-Value="doctor.HorarioDisponibilidad"></InputText>
+                    <ValidationMessage For="@(() => doctor.HorarioDisponibilidad)" />
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="card-footer bg-light d-flex justify-content-end">
+            <div class="btn-group">
+                <a href="/indexdoctor" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver </a>
+
+            </div>
+            <button type="submit" class="btn btn-outline-success">
+                <i class="bi bi-floppy-fill" /> Guardar
+            </button>
+        </div>
+    </div>
+    @mensajeTexto
+</EditForm>
+
+@code {
+    [Parameter]
+    public int DoctorId { get; set; }
+
+    public Doctor doctor = new Doctor();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarDoctor();
+    }
+
+    private async Task CargarDoctor()
+    {
+        if (DoctorId > 0)
+            doctor = await DoctorService.ObtenerDoctorPorId(DoctorId);
+    }
+
+    public async Task Guardar()
+    {
+        if (DoctorId > 0)
+        {
+            var exito = await DoctorService.ModificarDoctor(doctor);
+            await MostrarMensaje("Doctor editado con éxito", exito);
+        }
+        else
+        {
+            await MostrarMensaje("No se pudo editar el doctor", false);
+        }
+
+        NavigationManager.NavigateTo("indexdoctor");
+    }
+
+    string mensajeTexto = "";
+    bool ModalMensaje = false;
+
+    public async Task MostrarMensaje(string mensaje, bool exito)
+    {
+        mensajeTexto = mensaje;
+
+        if (exito)
+        {
+            mensajeTexto = "Editado con éxito";
+        }
+        else
+        {
+            mensajeTexto = "Error al editar";
+        }
+
+        ModalMensaje = true;
+        StateHasChanged();
+        await Task.Delay(3000);
+        ModalMensaje = false;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,119 @@
+﻿@page "/createcita"
+@using ProyectoSistemaClinico.Services
+@using ProyectoSistemaClinico.Models
+@inject NavigationManager NavigationManager
+@inject CitasService CitasService
+@inject DoctorService DoctorService
+
+@rendermode InteractiveServer
+<EditForm Model="Cita" OnValidSubmit="Crear" FormName="citasForm">
+
+    <div class="card shadow-lg">
+        <div class="card-header text-center bg-primary">
+            <h3 class="text-white"><strong>Crear Nueva Cita</strong></h3>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="NombrePaciente"><strong>Nombre del Paciente:</strong></label>
+                        <input type="text" class="form-control" id="NombrePaciente" @bind="Cita.NombrePaciente" placeholder="Ingrese el nombre del paciente" title="Nombre del Paciente" />
+                        <ValidationMessage For="@(() => Cita.NombrePaciente)" />
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="FechaHora"><strong>Fecha y Hora:</strong></label>
+                        <input type="datetime-local" class="form-control" @bind="Cita.FechaHora" />
+                        <ValidationMessage For="@(() => Cita.FechaHora)" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="DoctorId"><strong>Doctor:</strong></label>
+                        <select class="form-select" @bind="Cita.NombreMedico">
+                            <option value="">Selecciona un doctor</option>
+                            @foreach (var doctor in Doctores)
+                            {
+                                <option value="@doctor.NombreCompleto">@doctor.NombreCompleto</option>
+                            }
+                        </select>
+                        <ValidationMessage For="@(() => Cita.NombreMedico)" />
+                    </div>
+
+
+
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="RazonCita"><strong>Razón de la Cita:</strong></label>
+                        <input type="text" class="form-control" id="RazonCita" @bind="Cita.RazonCita" placeholder="Ingrese la razón de la cita" title="Razón de la Cita" />
+                        <ValidationMessage For="@(() => Cita.RazonCita)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-center">
+            <div class="btn-group">
+                <a type="button" href="/indexcita" class="btn btn-outline-primary"><span class="fas fa-arrow-left"></span> Volver </a>
+            </div>
+            <button type="submit" class="btn btn-outline-success">
+                <i class="bi bi-floppy-fill"></i> Crear
+            </button>
+        </div>
+    </div>
+    <div>@mensaje</div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int DoctorId { get; set; }
+
+    public Citas Cita { get; set; } = new Citas();
+    public string mensaje { get; set; } = string.Empty;
+    public List<Doctor> Doctores { get; set; } = new List<Doctor>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Doctores = await DoctorService.ObtenerTodos();
+    }
+
+    private async Task Crear()
+    {
+        mensaje = string.Empty;
+
+        if (CamposValidos(Cita))
+        {
+            var insertado = await CitasService.Crear(Cita);
+            if (insertado)
+            {
+                mensaje = "La cita se ha creado con éxito";
+                await Task.Delay(2000);
+            }
+            else
+            {
+                mensaje = "Esta hora de Citas esta Ocupada";
+            }
+        }
+        else
+        {
+            mensaje = "Por favor, complete todos los campos requeridos.";
+        }
+
+    }
+
+
+
+    private bool CamposValidos(Citas cita)
+    {
+        return !string.IsNullOrEmpty(cita.NombrePaciente) &&
+               cita.FechaHora != default &&
+               !string.IsNullOrEmpty(cita.NombreMedico) &&
+               !string.IsNullOrEmpty(cita.RazonCita);
+    }
+}

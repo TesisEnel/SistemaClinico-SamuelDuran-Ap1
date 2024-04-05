@@ -1,0 +1,161 @@
+﻿@page "/historialclinicoindex"
+
+@using ProyectoSistemaClinico.Models
+@using ProyectoSistemaClinico.Services
+@inject HistorialClinicoService historialClinicoService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<div class="card">
+    <div class="card-header text-center bg-primary">
+        <h3 class="text-white"><strong> Historiales Clinicos</strong></h3>
+    </div>
+
+    <div class="card-body">
+        <div class="col-8">
+            <label class="fw-bold">Filtrar por Fecha:</label>
+
+            <div class="input-group">
+                <label class="input-group-text bg-primary text-white">Desde</label>
+                <input type="date" class="form-control" @bind="fechaDesde">
+                <span class="input-group-text bg-primary text-white">Hasta</span>
+                <input type="date" class="form-control" @bind="fechaHasta">
+                <button class="btn btn-outline-primary" @onclick="BuscarPorFecha"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+        </div>
+        <div class="row align-items-end justify-content-end mb-4">
+            <div class="col-3">
+                <label class="fw-bold">Filtrar:</label>
+                <select class="form-select" @bind="filtrar">
+                    <option value="1">Id</option>
+                    <option value="2">Nombre del Paciente</option>
+                </select>
+            </div>
+
+            <div class="col-8">
+                <label class="fw-bold">Búsqueda:</label>
+
+
+                <div class="input-group">
+                    <InputText class="form-control" @bind-Value="busqueda"></InputText>
+                    <button class="btn btn-outline-primary" @onclick="Buscar"><i class="fas fa-search"></i> Buscar</button>
+                </div>
+            </div>
+
+                    <div class="col">
+                        <a href="/createhistorialclinico" class="btn btn-success"><i class="fas fa-plus"></i> Crear</a>
+                    </div>
+            </div>
+        </div>
+</div>
+
+       
+        <div>
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre del Paciente</th>
+                        <th>Fecha de Nacimiento</th>
+                        <th>Dirección</th>
+                        <th>Editar</th>
+                        <th>Detalle</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (listaHistorialesClinicos != null && listaHistorialesClinicos.Any())
+                    {
+                        @foreach (var historial in listaHistorialesClinicos)
+                        {
+                            <tr>
+                                <td>@historial.HistorialClinicoId</td>
+                                <td>@historial.NombrePaciente</td>
+                                <td>@historial.FechaNacimiento.ToShortDateString()</td>
+                                <td>@historial.Direccion</td>
+                                <td>
+                                    <a href="/editahistorialclinico/@historial.HistorialClinicoId" class="bi bi-pencil-square">
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="/detailshistorialclinico/@historial.HistorialClinicoId" class="bi bi-eye-fill">
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="/deletehistorialclinico/@historial.HistorialClinicoId" class="bi bi-trash3-fill">
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center"> <label>No hay historiales clínicos disponibles</label> </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    <div class="card-footer bg-light d-flex justify-content-end">
+        <div class="btn-group">
+            <a type="button" href="/auth" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver </a>
+        </div>
+    </div>
+
+@code {
+    public string filtrar = "1", busqueda = "";
+    private List<HistorialClinico> listaHistorialesClinicos;
+    public DateTime? fechaDesde, fechaHasta;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarHistorialesClinicos();
+    }
+
+    private async Task Buscar()
+    {
+        if (!string.IsNullOrEmpty(busqueda))
+        {
+            switch (filtrar)
+            {
+                case "1":
+                    if (int.TryParse(busqueda, out int Id))
+                    {
+                        listaHistorialesClinicos = await historialClinicoService.Listar(c => c.HistorialClinicoId == Id);
+                    }
+                    break;
+                case "2":
+                    listaHistorialesClinicos = await historialClinicoService.Listar(c => c.NombrePaciente.Contains(busqueda));
+                    break;
+                default:
+                    await CargarHistorialesClinicos();
+                    break;
+            }
+        }
+        else
+        {
+            await CargarHistorialesClinicos();
+        }
+    }
+
+
+    public async Task BuscarPorFecha()
+    {
+        if (fechaDesde != null && fechaHasta != null && fechaDesde <= fechaHasta)
+        {
+            listaHistorialesClinicos = await historialClinicoService.Listar(c => c.FechaNacimiento >= fechaDesde && c.FechaNacimiento <= fechaHasta);
+        }
+        else
+        {
+            await CargarHistorialesClinicos();
+        }
+    }
+
+    public async Task CargarHistorialesClinicos()
+    {
+        listaHistorialesClinicos = await historialClinicoService.Listar(c => true);
+    }
+}

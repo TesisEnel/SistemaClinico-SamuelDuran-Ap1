@@ -1,0 +1,154 @@
+﻿@page "/detailshistorialclinico/{HistorialClinicoId:int}"
+
+@using ProyectoSistemaClinico.Models
+@using ProyectoSistemaClinico.Services
+@using System.Text.Json
+@inject NavigationManager NavigationManager
+@inject HistorialClinicoService HistorialClinicoService
+@inject HistorialClinicoDetalleService HistorialClinicoDetalleService
+
+@rendermode InteractiveServer
+
+<div class="card-header text-center bg-primary">
+    <h3 class="text-white"><strong>Historial Clinico</strong></h3>
+</div>
+
+@if (historialClinico != null)
+ 
+{
+      <table class="table table-bordered">
+    <table class="table table-bordered">
+            
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="bg-secondary text-white">ID:</div>
+                    <div class="text-black">@historialClinico.HistorialClinicoId</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="bg-secondary text-white">Nombre del Paciente:</div>
+                    <div class="text-black">@historialClinico.NombrePaciente</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="bg-secondary text-white">Fecha de Nacimiento:</div>
+                    <div class="text-black">@historialClinico.FechaNacimiento.ToShortDateString()</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="bg-secondary text-white">Dirección:</div>
+                    <div class="text-black">@historialClinico.Direccion</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="bg-secondary text-white">Historial de Enfermedades y Cirugías Previas:</div>
+                    <div class="text-black">@historialClinico.HistorialEnfermedadesCirugias</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="bg-secondary text-white">Alergias Conocidas:</div>
+                    <div class="text-black">@historialClinico.Alergias</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="bg-secondary text-white">Reacciones a las Alergias:</div>
+                    <div class="text-black">@historialClinico.ReaccionesAlergias</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="bg-secondary text-white">Medicamentos Actuales y Dosis:</div>
+                    <div class="text-black">@historialClinico.MedicamentosActuales</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="bg-secondary text-white">Resultados de Pruebas Médicas y Exámenes:</div>
+                    <div class="text-black">@historialClinico.ResultadosPruebasMedicas</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="bg-secondary text-white">Notas de Progreso y Seguimiento:</div>
+                    <div class="text-black">@historialClinico.NotasProgresoSeguimiento</div>
+                </div>
+            </div>
+
+
+
+        </table>
+ 
+    </table>
+
+
+
+    <div class="card-header text-center bg-primary">
+        <h3 class="text-white"><strong>Detalles de Historial Clinico</strong></h3>
+    </div>
+
+    @if (detalleHistorialClinico != null)
+    {
+        <div class="mb-4"></div>
+
+        <div class="mb-4"></div>
+
+        <table class="table table-bordered text-center">
+            <thead class="bg-secondary text-white">
+                <tr>
+                    <th class="col-sm-2">ID</th>
+                    <th class="col-sm-2">Dieta</th>
+                    <th class="col-sm-2">Ejercicio Físico</th>
+                    <th class="col-sm-2">Consumo de Alcohol</th>
+                    <th class="col-sm-4">Otra Información Relevante</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="col-sm-2">@detalleHistorialClinico.Id</td>
+                    <td class="col-sm-2">@detalleHistorialClinico.Dieta</td>
+                    <td class="col-sm-2">@detalleHistorialClinico.EjercicioFisico</td>
+                    <td class="col-sm-2">@detalleHistorialClinico.ConsumoAlcohol</td>
+                    <td class="col-sm-4">@detalleHistorialClinico.OtraInformacionRelevante</td>
+                </tr>
+            </tbody>
+        </table>
+
+
+
+        
+    }
+    <div class="card-footer bg-light d-flex justify-content-end">
+        <div class="btn-group">
+            <a type="button" href="/historialclinicoindex" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver </a>
+        </div>
+    </div>
+
+
+}
+else
+{
+    <p>Historial clínico no encontrado.</p>
+}
+
+@code {
+    private HistorialClinico historialClinico = new HistorialClinico();
+    private HistorialClinicoDetalle detalleHistorialClinico = new HistorialClinicoDetalle();
+
+    [Parameter]
+    public int HistorialClinicoId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await BuscarHistorialClinico();
+    }
+
+    public async Task BuscarHistorialClinico()
+    {
+        historialClinico = await HistorialClinicoService.ObtenerHistorialClinicoPorId(HistorialClinicoId);
+        if (historialClinico != null)
+        {
+            await BuscarDetalleHistorialClinico(); 
+        }
+    }
+
+    public async Task BuscarDetalleHistorialClinico()
+    {
+        if (historialClinico.HistorialClinicoDetalle != null && historialClinico.HistorialClinicoDetalle.Any())
+        {
+            detalleHistorialClinico = historialClinico.HistorialClinicoDetalle.FirstOrDefault();
+        }
+    }
+
+}

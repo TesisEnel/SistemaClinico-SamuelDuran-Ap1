@@ -1,0 +1,94 @@
+﻿@page "/createdoctor"
+@using ProyectoSistemaClinico.Models
+@using ProyectoSistemaClinico.Services
+@inject NavigationManager NavigationManager
+@inject DoctorService DoctorService
+@rendermode InteractiveServer
+<EditForm Model="doctor" OnValidSubmit="Crear" FormName="doctorForm">
+    <DataAnnotationsValidator />
+
+    <div class="card-header text-center bg-primary">
+        <h3 class="text-white"><strong>Crear Nuevo Doctor</strong></h3>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="fw-bold">Nombre Completo:</label>
+                <InputText @bind-Value="doctor.NombreCompleto" class="form-control" placeholder="Nombre completo" required></InputText>
+                <ValidationMessage For="@(() => doctor.NombreCompleto)"></ValidationMessage>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="fw-bold">Especialidad Médica:</label>
+                <InputText @bind-Value="doctor.EspecialidadMedica" class="form-control" placeholder="Especialidad" required></InputText>
+                <ValidationMessage For="@(() => doctor.EspecialidadMedica)"></ValidationMessage>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="form-group">
+                <label for="FechaDeCreacion"><strong>Fecha y hora de creacion:</strong></label>
+                <input type="datetime-local" class="form-control" @bind="doctor.FechaDeCreacion" />
+                <ValidationMessage For="@(() => doctor.FechaDeCreacion)" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="fw-bold">Horario de Disponibilidad:</label>
+                <InputText @bind-Value="doctor.HorarioDisponibilidad" class="form-control" placeholder="Dia y Hora disponible" required></InputText>
+                <ValidationMessage For="@(() => doctor.HorarioDisponibilidad)"></ValidationMessage>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer bg-light d-flex justify-content-end">
+        <div class="btn-group">
+            <a type="button" href="/indexdoctor" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver </a>
+        </div>
+        <button type="submit" class="btn btn-outline-success">
+            <i class="bi bi-floppy-fill" /> Guardar
+        </button>
+    </div>
+    @mensaje
+</EditForm>
+
+@code {
+    public Doctor doctor = new Doctor();
+        
+    public string mensaje = "";
+
+    public async Task Crear()
+    {
+        if (await Validar())
+        {
+            var creado = await DoctorService.CrearDoctor(doctor);
+
+            if (creado)
+            {
+                mensaje = "El doctor se ha creado con éxito.";
+            }
+            else
+            {
+                mensaje = "No se pudo crear el doctor.";
+            }
+        }
+        else
+        {
+            mensaje = "Los datos del doctor no son válidos.";
+        }
+    }
+
+    public async Task<bool> Validar()
+    {
+        if (string.IsNullOrEmpty(doctor.NombreCompleto) || string.IsNullOrEmpty(doctor.EspecialidadMedica) || string.IsNullOrEmpty(doctor.HorarioDisponibilidad))
+        {
+            return false; 
+        }
+
+
+        return true;
+    }
+
+}

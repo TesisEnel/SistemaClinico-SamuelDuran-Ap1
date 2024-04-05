@@ -1,0 +1,52 @@
+﻿@page "/detailscita/{CitasId:int}";
+@using ProyectoSistemaClinico.Models
+@inject NavigationManager NavigationManager
+@using ProyectoSistemaClinico.Services
+@inject CitasService CitasService
+
+@rendermode InteractiveServer
+<div class="card shadow-lg">
+    @*Header*@
+    <div class="card-header text-center bg-primary">
+        <h3 class="text-white"><strong>Detalle de Citas</strong></h3>
+    </div>
+    @*Body*@
+    <div class="card-body">
+        <div class="mb-1">
+            <p class="mb-0"><strong>CitasId:</strong> @cita.CitasId</p>
+        </div>
+        <div class="mb-1">
+            <p class="mb-0"><strong>Nombre del Paciente:</strong> @cita.NombrePaciente</p>
+        </div>
+        <div class="mb-1">
+            <p class="mb-0"><strong>Fecha y Hora de la Cita:</strong> @cita.FechaHora</p>
+        </div>
+        <div class="mb-1">
+            <p class="mb-0"><strong>Nombre del Médico o Especialista:</strong> @cita.NombreMedico</p>
+        </div>
+        <div class="mb-1">
+            <p class="mb-0"><strong>Razón de la Cita:</strong> @cita.RazonCita</p>
+        </div>
+
+    </div>
+    <div class="card-footer bg-light d-flex justify-content-end">
+        <div class="btn-group">
+            <a type="button" href="/indexcita/" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int CitasId { get; set; }
+    public Citas cita = new Citas();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        if (CitasId > 0)
+            cita = await CitasService.BuscarPorId(CitasId);
+    }
+
+    
+}

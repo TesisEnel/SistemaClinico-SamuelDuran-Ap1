@@ -1,0 +1,215 @@
+﻿@page "/editahistorialclinico/{HistorialClinicoId:int}";
+@using ProyectoSistemaClinico.Models
+@using ProyectoSistemaClinico.Services
+@inject NavigationManager NavigationManager
+@inject HistorialClinicoService HistorialClinicoService
+@inject HistorialClinicoDetalleService HistorialClinicoDetalleService
+@rendermode InteractiveServer
+<EditForm Model="historialClinico" OnValidSubmit="Guardar" FormName="HistorialClinicoForm">
+    <DataAnnotationsValidator />
+
+    <div class="card">
+        <div class="card-header text-center bg-primary">
+            <h3 class="text-white"><strong>Editar Historial Clínico</strong></h3>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold">Nombre del Paciente:</label>
+                    <InputText @bind-Value="historialClinico.NombrePaciente" class="form-control" />
+                    <ValidationMessage For="@(() => historialClinico.NombrePaciente)" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold">Fecha de Nacimiento:</label>
+                    <InputDate @bind-Value="historialClinico.FechaNacimiento" class="form-control"></InputDate>
+                    <ValidationMessage For="@(() => historialClinico.FechaNacimiento)" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold">Dirección:</label>
+                    <InputText @bind-Value="historialClinico.Direccion" class="form-control" />
+                    <ValidationMessage For="@(() => historialClinico.Direccion)" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold">Alergias Conocidas:</label>
+                    <InputText @bind-Value="historialClinico.Alergias" class="form-control" />
+                    <ValidationMessage For="@(() => historialClinico.Alergias)" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold">Reacciones a las Alergias:</label>
+                    <InputText @bind-Value="historialClinico.ReaccionesAlergias" class="form-control" />
+                    <ValidationMessage For="@(() => historialClinico.ReaccionesAlergias)" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold">Medicamentos Actuales y Dosis:</label>
+                    <InputText @bind-Value="historialClinico.MedicamentosActuales" class="form-control" />
+                    <ValidationMessage For="@(() => historialClinico.MedicamentosActuales)" />
+                </div>
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <label for="HistorialEnfermedadesCirugias" class="fw-bold">Historial de Enfermedades y Cirugías Previas:</label>
+                <InputTextArea @bind-Value="historialClinico.HistorialEnfermedadesCirugias" class="form-control" rows="4"></InputTextArea>
+                <ValidationMessage For="@(() => historialClinico.HistorialEnfermedadesCirugias)" />
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <label for="ResultadosPruebasMedicas" class="fw-bold">Resultados de Pruebas Médicas y Exámenes:</label>
+                <InputTextArea @bind-Value="historialClinico.ResultadosPruebasMedicas" class="form-control" rows="4"></InputTextArea>
+                <ValidationMessage For="@(() => historialClinico.ResultadosPruebasMedicas)" />
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <label for="NotasProgresoSeguimiento" class="fw-bold">Notas de Progreso y Seguimiento:</label>
+                <InputTextArea @bind-Value="historialClinico.NotasProgresoSeguimiento" class="form-control" rows="4"></InputTextArea>
+                <ValidationMessage For="@(() => historialClinico.NotasProgresoSeguimiento)" />
+            </div>
+
+            <hr />
+
+            <div class="card-header text-center bg-primary">
+                <h3 class="text-white"><strong>Editar Detalle del Historial Clínico</strong></h3>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <div>
+                        <label class="fw-bold">Dieta:</label>
+                        <InputText class="form-control mb-2" @bind-Value="detalleHistorialClinico.Dieta"></InputText>
+                    </div>
+                    <div>
+                        <label class="fw-bold">Ejercicio Físico:</label>
+                        <InputText class="form-control mb-2" @bind-Value="detalleHistorialClinico.EjercicioFisico"></InputText>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div>
+                        <label class="fw-bold">Consumo de Alcohol:</label>
+                        <InputText class="form-control mb-2" @bind-Value="detalleHistorialClinico.ConsumoAlcohol"></InputText>
+                    </div>
+                    <div>
+                        <label class="fw-bold">Otra Información Relevante:</label>
+                        <InputText class="form-control mb-2" @bind-Value="detalleHistorialClinico.OtraInformacionRelevante"></InputText>
+                    </div>
+                </div>
+
+                <div class="text-end mb-2">
+                    <button type="button" class="btn btn-outline-success" @onclick="AgregarDetalle"><i class="bi bi-floppy-fill"></i> Agregar</button>
+                </div>
+            </div>
+
+            <div class="col-5">
+                <div class="mb-4"></div>
+                <table class="table table-bordered text-center">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th class="col-3">Dieta</th>
+                            <th class="col-3">Ejercicio Físico</th>
+                            <th class="col-3">Consumo de Alcohol</th>
+                            <th class="col-3">Otra Información Relevante</th>
+                            <th class="col-1">Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (historialClinico.HistorialClinicoDetalle != null && historialClinico.HistorialClinicoDetalle.Any())
+                        {
+                            @foreach (var detalle in historialClinico.HistorialClinicoDetalle)
+                            {
+                                <tr>
+                                    <td class="col-3">@detalle.Dieta</td>
+                                    <td class="col-3">@detalle.EjercicioFisico</td>
+                                    <td class="col-3">@detalle.ConsumoAlcohol</td>
+                                    <td class="col-3">@detalle.OtraInformacionRelevante</td>
+                                    <td class="col-1">
+                                        <button type="button" class="btn btn-outline-danger" @onclick="(() => EliminarDetalle(detalle))"><i class="bi bi-trash3-fill" />Eliminar</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5">No hay detalles...</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer bg-light d-flex justify-content-end">
+            <div class="btn-group">
+                <a href="/historialclinicoindex" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver</a>
+            </div>
+            <button type="submit" class="btn btn-outline-success"><i class="bi bi-floppy-fill"></i> Guardar</button>
+        </div>
+    </div>
+    @mensaje
+</EditForm>
+
+@code {
+    private HistorialClinico historialClinico = new HistorialClinico();
+    private HistorialClinicoDetalle detalleHistorialClinico = new HistorialClinicoDetalle();
+    public string mensaje { get; set; } = string.Empty;
+    [Parameter]
+    public int HistorialClinicoId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        historialClinico = await HistorialClinicoService.ObtenerHistorialClinicoPorId(HistorialClinicoId);
+    }
+
+    private async Task Guardar()
+    {
+        if (string.IsNullOrWhiteSpace(detalleHistorialClinico.OtraInformacionRelevante))
+        {
+            mensaje = "Por favor, ingrese información relevante antes de guardar.";
+            return;
+        }
+
+        if (historialClinico.HistorialClinicoDetalle == null)
+            historialClinico.HistorialClinicoDetalle = new List<HistorialClinicoDetalle>();
+
+        historialClinico.HistorialClinicoDetalle.Add(detalleHistorialClinico);
+
+        var actualizado = await HistorialClinicoService.ModificarHistorialClinico(historialClinico);
+
+        if (actualizado)
+        {
+            mensaje = "El historial clínico se ha actualizado con éxito.";
+            NavigationManager.NavigateTo("/historialclinicoindex");
+        }
+        else
+        {
+            mensaje = "No se pudo actualizar el historial clínico.";
+        }
+    }
+
+
+    private void AgregarDetalle()
+    {
+        if (detalleHistorialClinico != null)
+        {
+            if (historialClinico.HistorialClinicoDetalle == null)
+                historialClinico.HistorialClinicoDetalle = new List<HistorialClinicoDetalle>();
+
+            historialClinico.HistorialClinicoDetalle.Add(detalleHistorialClinico);
+            detalleHistorialClinico = new HistorialClinicoDetalle();
+        }
+    }
+
+    private void EliminarDetalle(HistorialClinicoDetalle detalle)
+    {
+        historialClinico.HistorialClinicoDetalle.Remove(detalle);
+    }
+}

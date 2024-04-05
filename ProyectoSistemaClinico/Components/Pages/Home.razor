@@ -1,0 +1,63 @@
+﻿@page "/"
+@inject NavigationManager NavigationManager
+
+<PageTitle>Home</PageTitle>
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Título de la página</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #D8D2FC;
+            font-family: Arial, sans-serif;
+        }
+
+        .welcome-container {
+            background-color: #f8f9fa;
+            border: 3px solid #007bff;
+            border-radius: 40px;
+            padding: 100px;
+            margin-top: 60px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container welcome-container">
+        <div class="d-flex justify-content-center align-items-start">
+            <div style="max-width: 1000px;">
+                <div class="logo text-center mb-4">
+                    <img src="Imagenes/firmar.png" class="icon" style="width: 150px; height: auto;" />
+                </div>
+                <h2 class="text-center mb-4">¡Bienvenido al Sistema de Registro Clínico!</h2>
+                <p class="text-center">Un sistema integral para gestionar la información médica con eficiencia y seguridad.</p>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <a href="/Account/Login" class="btn btn-outline-primary">Iniciar Ses&iacute;on</a>
+                    </div>
+
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <a href="/Account/Register" class="btn btn-outline-primary">Registrarte</a>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+</html>
+
+
+
+
+
+

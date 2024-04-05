@@ -1,0 +1,52 @@
+﻿@page "/detailsdoctor/{DoctorId:int}"
+@using ProyectoSistemaClinico.Models
+@inject NavigationManager NavigationManager
+@using ProyectoSistemaClinico.Services
+@inject DoctorService DoctorService
+
+@rendermode InteractiveServer
+
+<div class="card shadow-lg">
+    <!-- Header -->
+    <div class="card-header text-center bg-primary">
+        <h3 class="text-white"><strong>Detalles Doctores</strong></h3>
+    </div>
+    <!-- Body -->
+    <div class="card-body">
+        <div class="mb-1">
+            <p class="mb-0"><strong>ID:</strong> @doctor.DoctorId</p>
+        </div>
+        <div class="mb-1">
+            <p class="mb-0"><strong>Nombre Completo:</strong> @doctor.NombreCompleto</p>
+        </div>
+        <div class="mb-1">
+            <p class="mb-0"><strong>Fecha de Creacion:</strong> @doctor.FechaDeCreacion</p>
+        </div>
+        <div class="mb-1">
+            <p class="mb-0"><strong>Especialidad Médica:</strong> @doctor.EspecialidadMedica</p>
+        </div>
+        <div class="mb-1">
+            <p class="mb-0"><strong>Horario de Disponibilidad:</strong> @doctor.HorarioDisponibilidad</p>
+        </div>
+    </div>
+    <!-- Footer -->
+    <div class="card-footer bg-light d-flex justify-content-end">
+        <div class="btn-group">
+            <a type="button" href="/indexdoctor/" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Doctor doctor = new Doctor();
+
+    [Parameter]
+    public int DoctorId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        if (DoctorId > 0)
+            doctor = await DoctorService.ObtenerDoctorPorId(DoctorId);
+    }
+}

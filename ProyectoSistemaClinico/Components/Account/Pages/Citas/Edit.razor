@@ -1,0 +1,128 @@
+﻿@page "/editarcita/{CitasId:int}";
+@using ProyectoSistemaClinico.Models
+@using ProyectoSistemaClinico.Services
+@inject NavigationManager NavigationManager
+@inject CitasService CitasService
+@inject DoctorService DoctorService
+
+@rendermode InteractiveServer
+<EditForm Model="cita" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="card-header text-center bg-primary">
+        <h3 class="text-white"><strong>Editar Cita</strong></h3>
+    </div>
+
+    <div class="card">
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <label class="fw-bold">Nombre del Paciente:</label>
+                    <InputText class="form-control" @bind-Value="cita.NombrePaciente"></InputText>
+                    <ValidationMessage For="@(() => cita.NombrePaciente)" />
+              
+                <div class="form-group">
+                    <label for="FechaHora"><strong>Fecha y Hora:</strong></label>
+                    <input type="datetime-local" class="form-control" @bind="cita.FechaHora" />
+                    <ValidationMessage For="@(() => cita.FechaHora)" />
+                </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                <div class="form-group">
+                    <label for="DoctorId"><strong>Doctor:</strong></label>
+                    <select class="form-select" @bind="cita.NombreMedico">
+                        @foreach (var doctor in Doctores)
+                        {
+                            <option value="@doctor.DoctorId">@doctor.NombreCompleto</option>
+                        }
+                    </select>
+
+                    <ValidationMessage For="@(() => cita.NombreMedico)" />
+                </div>
+               
+                    <label class="fw-bold">Razón de la Cita:</label>
+                    <InputText class="form-control" @bind-Value="cita.RazonCita"></InputText>
+                    <ValidationMessage For="@(() => cita.RazonCita)" />
+                </div>
+            </div>
+
+            
+        </div>
+
+        <div class="card-footer bg-light d-flex justify-content-end">
+            <div class="btn-group">
+                <a href="/indexcita" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver </a>
+
+            </div>
+            <button type="submit" class="btn btn-outline-success">
+                <i class="bi bi-floppy-fill" /> Guardar
+            </button>
+        </div>
+    </div>
+    @mensajeTexto
+</EditForm>
+
+@code {
+    [Parameter]
+    public int CitasId { get; set; }
+    public int DoctorId { get; set; }
+    public Citas cita = new Citas();
+
+    public string mensaje { get; set; } = string.Empty;
+    public List<Doctor> Doctores { get; set; } = new List<Doctor>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarCita();
+        Doctores = await DoctorService.ObtenerTodos();
+
+    }
+
+    private async Task CargarCita()
+    {
+        if (CitasId > 0)
+            cita = await CitasService.BuscarPorId(CitasId);
+    }
+
+    public async Task Guardar()
+    {
+        if (CitasId > 0)
+        {
+            var exito = await CitasService.Modificar(cita);
+            await MostrarMensaje("Cita editada con éxito", exito);
+        }
+        else
+        {
+            await MostrarMensaje("No se pudo editar la cita", false);
+        }
+
+        NavigationManager.NavigateTo("indexcita");
+    }
+
+    string mensajeTexto = "";
+    bool ModalMensaje = false;
+
+    public async Task MostrarMensaje(string mensaje, bool exito)
+    {
+        mensajeTexto = mensaje;
+
+        if (exito)
+        {
+            mensajeTexto = "Editado con éxito";
+        }
+        else
+        {
+            mensajeTexto = "Error al editar";
+        }
+
+        ModalMensaje = true;
+        StateHasChanged();
+        await Task.Delay(3000);
+        ModalMensaje = false;
+        StateHasChanged();
+    }
+}

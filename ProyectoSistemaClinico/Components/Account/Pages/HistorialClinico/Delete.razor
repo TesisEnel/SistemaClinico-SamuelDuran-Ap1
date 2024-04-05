@@ -1,0 +1,130 @@
+﻿@page "/deletehistorialclinico/{HistorialClinicoID:int}"
+@using ProyectoSistemaClinico.Models
+@using ProyectoSistemaClinico.Services
+@inject NavigationManager NavigationManager
+@inject HistorialClinicoService HistorialClinicoService
+@inject HistorialClinicoDetalleService HistorialClinicoDetalleService
+
+@rendermode InteractiveServer
+
+<div class="card">
+    <div class="card-header">
+        <h3><strong>Eliminar Historial Clínico</strong></h3>
+    </div>
+
+    <div class="card-body text-center">
+        <div class="row">
+            <div class="col-md-6 mb-3 mx-auto">
+                <label class="form-label font-weight-bold"><strong>ID del Historial Clínico:</strong></label>
+                <span>@historialClinico.HistorialClinicoId</span>
+            </div>
+
+            <div class="col-md-6 mb-3 mx-auto">
+                <label class="form-label font-weight-bold"><strong>Nombre del Paciente:</strong></label>
+                <span>@historialClinico.NombrePaciente</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3 mx-auto">
+                <label class="form-label font-weight-bold"><strong>Fecha de Nacimiento:</strong></label>
+                <span>@historialClinico.FechaNacimiento.ToString("dd/MM/yyyy HH:mm")</span>
+
+            <div class="col-md-6 mb-3 mx-auto">
+                <label class="form-label font-weight-bold"><strong>Dirección:</strong></label>
+                <span>@historialClinico.Direccion</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3 mx-auto">
+                <label class="form-label font-weight-bold"><strong>Alergias Conocidas:</strong></label>
+                <span>@historialClinico.Alergias</span>
+            </div>
+
+            <div class="col-md-6 mb-3 mx-auto">
+                <label class="form-label font-weight-bold"><strong>Reacciones a las Alergias:</strong></label>
+                <span>@historialClinico.ReaccionesAlergias</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3 mx-auto">
+                <label class="form-label font-weight-bold"><strong>Medicamentos Actuales y Dosis:</strong></label>
+                <span>@historialClinico.MedicamentosActuales</span>
+            </div>
+
+            <div class="col-md-6 mb-3 mx-auto">
+                <label class="form-label font-weight-bold"><strong>Historial de Enfermedades y Cirugías Previas:</strong></label>
+                <span>@historialClinico.HistorialEnfermedadesCirugias</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 mb-3 mx-auto">
+                <label class="form-label font-weight-bold"><strong>Resultados de Pruebas Médicas y Exámenes:</strong></label>
+                <span>@historialClinico.ResultadosPruebasMedicas</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 mb-3 mx-auto">
+                <label class="form-label font-weight-bold"><strong>Notas de Progreso y Seguimiento:</strong></label>
+                <span>@historialClinico.NotasProgresoSeguimiento</span>
+            </div>
+        </div>
+
+        <div class="col-md-12 mb-3 mx-auto">
+            <p>¿Seguro que deseas eliminar este historial clínico?</p>
+        </div>
+    </div>
+
+    <div class="card-footer bg-light d-flex justify-content-center">
+        <div class="btn-group">
+            <button @onclick="Eliminar" type="button" class="btn btn-success btn-block"><span class="fas fa-check"></span> Sí</button>
+            <a href="/historialclinicoindex" class="btn btn-danger btn-block"><span class="fas fa-times"></span> No</a>
+        </div>
+    </div>
+</div>
+</div>
+@mensaje
+@code {
+    [Parameter]
+    public int HistorialClinicoID { get; set; }
+    private HistorialClinico historialClinico = new HistorialClinico();
+    public string mensaje { get; set; } = string.Empty;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (HistorialClinicoID > 0)
+            historialClinico = await HistorialClinicoService.ObtenerHistorialClinicoPorId(HistorialClinicoID);
+    }
+
+    public async Task Eliminar()
+    {
+        if (historialClinico != null)
+        {
+            foreach (var detalle in historialClinico.HistorialClinicoDetalle)
+            {
+                await HistorialClinicoDetalleService.Eliminar(detalle);
+            }
+
+            var eliminar = await HistorialClinicoService.Eliminar(historialClinico);
+
+            if (eliminar)
+            {
+                mensaje = "El historial clínico se ha eliminado con éxito";
+                await Task.Delay(2000);
+            }
+            else
+            {
+                mensaje = "No se ha podido eliminar el historial clínico correctamente";
+            }
+
+            NavigationManager.NavigateTo("historialclinicoindex");
+        }
+    }
+
+}
+

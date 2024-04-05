@@ -1,0 +1,165 @@
+﻿@page "/indexcita"
+@using ProyectoSistemaClinico.Models
+@using System.Linq.Expressions
+@inject NavigationManager NavigationManager
+@using ProyectoSistemaClinico.Services;
+@inject CitasService CitasService
+@rendermode InteractiveServer
+
+<div class="card">
+    <div class="card-header text-center bg-primary">
+        <h3 class="text-white"><strong> Citas</strong></h3>
+    </div>
+
+    <div class="card-body">
+        <div class="col-8">
+            <label class="fw-bold">Filtrar por Fecha:</label>
+
+            <div class="input-group">
+                <label class="input-group-text bg-primary text-white">Desde</label>
+                <input type="date" class="form-control" @bind="fechaDesde">
+                <span class="input-group-text bg-primary text-white">Hasta</span>
+                <input type="date" class="form-control" @bind="fechaHasta">
+                <button class="btn btn-outline-primary" @onclick="BuscarPorFecha"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+        </div>
+        <div class="row align-items-end justify-content-end mb-4">
+            <div class="col-3">
+                <label class="fw-bold">Filtrar:</label>
+                <select class="form-select" @bind="filtrar">
+                    <option value="1">Citas Id</option>
+                    <option value="2">Nombre del Paciente</option>
+                </select>
+            </div>
+
+            <div class="col-8">
+                <label class="fw-bold">Búsqueda:</label>
+
+
+                <div class="input-group">
+                    <InputText class="form-control" @bind-Value="busqueda"></InputText>
+                    <button class="btn btn-outline-primary" @onclick="Buscar"><i class="fas fa-search"></i> Buscar</button>
+                </div>
+            </div>
+
+            <div class="col">
+                <a href="/createcita" class="btn btn-success"><i class="fas fa-plus"></i> Crear</a>
+            </div>
+        </div>
+
+        <div>
+            <table class="table table-bordered text-center">
+
+                <thead>
+                    <tr>
+                        <th>Citas Id</th>
+                        <th>Nombre del Paciente</th>
+                        <th>Fecha y Hora</th>
+                        <th>Nombre del Médico</th>
+                        <th>Razón de la Cita</th>
+                        <th>Editar</th>
+                        <th>Detalle</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (ListaCitas.Any())
+                    {
+                        @foreach (var item in ListaCitas)
+                        {
+                            <tr>
+                                <td>@item.CitasId</td>
+                                <td>@item.NombrePaciente</td>
+                                <td>@item.FechaHora.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.NombreMedico</td>
+                                <td>@item.RazonCita</td>
+                                <td>
+                                    <a href="/editarcita/@item.CitasId" class="bi bi-pencil-square">
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="/detailscita/@item.CitasId" class="bi bi-eye-fill">
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="/deletecita/@item.CitasId" class="bi bi-trash3-fill">
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center"> <label>No hay citas disponibles</label> </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+
+            <div class="card-footer bg-light d-flex justify-content-end">
+                <div class="btn-group">
+                    <a type="button" href="/auth" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@code {
+    public string filtrar = "1", busqueda = "";
+    public DateTime? fechaDesde, fechaHasta;
+    public List<Citas> ListaCitas = new List<Citas>();
+    public Citas citas = new Citas();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarCitas();
+    }
+
+    public async Task Buscar()
+    {
+        if (!string.IsNullOrEmpty(busqueda))
+        {
+            switch (filtrar)
+            {
+                case "1":
+                    if (int.TryParse(busqueda, out int citaId))
+                    {
+                        ListaCitas = await CitasService.Listar(c => c.CitasId == citaId);
+                    }
+                    break;
+                case "2":
+                    ListaCitas = await CitasService.Listar(c => c.NombrePaciente.Contains(busqueda));
+                    break;
+                default:
+                    await CargarCitas();
+                    break;
+            }
+        }
+        else
+        {
+            await CargarCitas();
+        }
+    }
+
+    public async Task BuscarPorFecha()
+    {
+        if (fechaDesde != null && fechaHasta != null && fechaDesde <= fechaHasta)
+        {
+            ListaCitas = await CitasService.Listar(c => c.FechaHora >= fechaDesde && c.FechaHora <= fechaHasta);
+        }
+        else
+        {
+            await CargarCitas();
+        }
+    }
+
+    private async Task CargarCitas()
+    {
+        ListaCitas = await CitasService.Listar(c => true);
+    }
+}
