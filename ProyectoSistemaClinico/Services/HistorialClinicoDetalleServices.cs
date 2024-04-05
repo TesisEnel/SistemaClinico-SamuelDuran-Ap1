@@ -23,7 +23,7 @@ namespace ProyectoSistemaClinico.Services
 
         public async Task<bool> ValidarHistorialClinicoDetalleExistente(int id)
         {
-            return await _context.HistorialClinicoDetalle.AnyAsync(h => h.Id == id);
+            return await _context.HistorialClinicoDetalle.AnyAsync(h => h.Id == id  );
         }
 
         public async Task<HistorialClinicoDetalle> ObtenerHistorialClinicoDetallePorId(int id)

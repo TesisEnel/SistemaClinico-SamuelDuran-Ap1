@@ -91,40 +91,60 @@
 @code {
     [Parameter]
     public int HistorialClinicoID { get; set; }
-    private HistorialClinico historialClinico = new HistorialClinico();
+    public int Id { get; set; }
+    public HistorialClinico historialClinico = new HistorialClinico();
+    public HistorialClinicoDetalle historialClinicoDetalle = new HistorialClinicoDetalle();
     public string mensaje { get; set; } = string.Empty;
 
 
     protected override async Task OnInitializedAsync()
     {
         if (HistorialClinicoID > 0)
+        {
             historialClinico = await HistorialClinicoService.ObtenerHistorialClinicoPorId(HistorialClinicoID);
-    }
+        }
+        if (Id > 0)
+        {
+            historialClinicoDetalle = await HistorialClinicoDetalleService.ObtenerHistorialClinicoDetallePorId(Id);
 
+            
+        }
+    }
     public async Task Eliminar()
     {
         if (historialClinico != null)
         {
-            foreach (var detalle in historialClinico.HistorialClinicoDetalle)
+            try
             {
-                await HistorialClinicoDetalleService.Eliminar(detalle);
+                if (historialClinico.HistorialClinicoDetalle != null)
+                {
+                    foreach (var detalle in historialClinico.HistorialClinicoDetalle)
+                    {
+                        await HistorialClinicoDetalleService.Eliminar(detalle);
+                    }
+                }
+
+                var eliminar = await HistorialClinicoService.Eliminar(historialClinico);
+
+                if (eliminar)
+                {
+                    mensaje = "El historial clínico se ha eliminado con éxito";
+                    await Task.Delay(2000);
+                    NavigationManager.NavigateTo("historialclinicoindex");
+                }
+                else
+                {
+                    mensaje = "No se ha podido eliminar el historial clínico correctamente";
+                }
             }
-
-            var eliminar = await HistorialClinicoService.Eliminar(historialClinico);
-
-            if (eliminar)
+            catch (Exception ex)
             {
-                mensaje = "El historial clínico se ha eliminado con éxito";
-                await Task.Delay(2000);
+                mensaje = "Error al intentar eliminar el historial clínico: " + ex.Message;
             }
-            else
-            {
-                mensaje = "No se ha podido eliminar el historial clínico correctamente";
-            }
-
-            NavigationManager.NavigateTo("historialclinicoindex");
         }
     }
+
+
 
 }
 

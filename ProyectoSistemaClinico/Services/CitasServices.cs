@@ -67,7 +67,11 @@ namespace ProyectoSistemaClinico.Services
             return await _context.Citas.FindAsync(citaId);
         }
 
-       
+
+        public async Task<List<Citas>> ObtenerTodos()
+        {
+            return await _context.Citas.ToListAsync();
+        }
 
         public async Task<List<Citas>> Listar(Expression<Func<Citas, bool>> criterio)
         {

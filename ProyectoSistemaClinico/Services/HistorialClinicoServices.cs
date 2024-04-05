@@ -25,9 +25,9 @@ namespace ProyectoSistemaClinico.Services
             return true;
         }
 
-        public async Task<bool> ValidarHistorialClinicoExistente(int id)
+        public async Task<bool> ValidarHistorialClinicoExistente(int id, string nombrePaciente)
         {
-            return await _context.HistorialClinico.AnyAsync(h => h.HistorialClinicoId == id);
+            return await _context.HistorialClinico.AnyAsync(h => h.HistorialClinicoId == id && h.NombrePaciente == nombrePaciente);
         }
 
         public async Task<HistorialClinico> ObtenerHistorialClinicoPorId(int id)
@@ -46,6 +46,7 @@ namespace ProyectoSistemaClinico.Services
         {
             _context.HistorialClinico.Remove(historialClinico);
             return await _context.SaveChangesAsync() > 0;
+
         }
 
         public async Task<List<HistorialClinico>> ObtenerTodos()
