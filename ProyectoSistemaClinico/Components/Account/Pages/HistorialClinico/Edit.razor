@@ -4,6 +4,8 @@
 @inject NavigationManager NavigationManager
 @inject HistorialClinicoService HistorialClinicoService
 @inject HistorialClinicoDetalleService HistorialClinicoDetalleService
+@inject CitasService citasService
+
 @rendermode InteractiveServer
 <EditForm Model="historialClinico" OnValidSubmit="Guardar" FormName="HistorialClinicoForm">
     <DataAnnotationsValidator />
@@ -17,9 +19,13 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold">Nombre del Paciente:</label>
-                    <InputText @bind-Value="historialClinico.NombrePaciente" class="form-control" />
+                    <input class="form-control" value="@historialClinico.NombrePaciente" disabled />
                     <ValidationMessage For="@(() => historialClinico.NombrePaciente)" />
                 </div>
+
+
+
+
 
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold">Fecha de Nacimiento:</label>
@@ -161,26 +167,28 @@
     private HistorialClinico historialClinico = new HistorialClinico();
     private HistorialClinicoDetalle detalleHistorialClinico = new HistorialClinicoDetalle();
     public string mensaje { get; set; } = string.Empty;
+    public List<Citas> cita { get; set; } = new List<Citas>();
+    public Citas Cita { get; set; } = new Citas();
+
     [Parameter]
     public int HistorialClinicoId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         historialClinico = await HistorialClinicoService.ObtenerHistorialClinicoPorId(HistorialClinicoId);
+
+
+        cita = await citasService.ObtenerTodos();
     }
 
-    private async Task Guardar()
+
+    public async Task Guardar()
     {
-        if (string.IsNullOrWhiteSpace(detalleHistorialClinico.OtraInformacionRelevante))
-        {
-            mensaje = "Por favor, ingrese información relevante antes de guardar.";
-            return;
-        }
-
         if (historialClinico.HistorialClinicoDetalle == null)
+        {
             historialClinico.HistorialClinicoDetalle = new List<HistorialClinicoDetalle>();
-
-        historialClinico.HistorialClinicoDetalle.Add(detalleHistorialClinico);
+            historialClinico.HistorialClinicoDetalle.Add(detalleHistorialClinico);
+        }
 
         var actualizado = await HistorialClinicoService.ModificarHistorialClinico(historialClinico);
 
@@ -195,8 +203,7 @@
         }
     }
 
-
-    private void AgregarDetalle()
+    public void AgregarDetalle()
     {
         if (detalleHistorialClinico != null)
         {
@@ -208,7 +215,7 @@
         }
     }
 
-    private void EliminarDetalle(HistorialClinicoDetalle detalle)
+    public void EliminarDetalle(HistorialClinicoDetalle detalle)
     {
         historialClinico.HistorialClinicoDetalle.Remove(detalle);
     }

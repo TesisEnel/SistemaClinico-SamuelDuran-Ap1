@@ -1,12 +1,13 @@
 ﻿@page "/createhistorialclinico"
 @using ProyectoSistemaClinico.Models
 @using ProyectoSistemaClinico.Services
-@rendermode InteractiveServer
+
 @inject NavigationManager NavigationManager
 @inject HistorialClinicoService HistorialClinicoService
 @inject HistorialClinicoDetalleService HistorialClinicoDetalleService
 @inject CitasService citasService
 
+@rendermode InteractiveServer
 <EditForm Model="historialClinico" OnValidSubmit="Guardar" FormName="HistorialClinicoForm">
     <DataAnnotationsValidator />
 
@@ -183,6 +184,14 @@
 
     private async Task Guardar()
     {
+        var historialExistente = await HistorialClinicoService.ValidarHistorialClinicoExistente( historialClinico.HistorialClinicoId, historialClinico.NombrePaciente);
+
+        if (historialExistente != null)
+        {
+            mensaje = "Ya existe un historial clínico registrado para este paciente.";
+            return;
+        }
+
         if (listaDetallesHistorialClinico.Count > 0)
         {
             historialClinico.HistorialClinicoDetalle = listaDetallesHistorialClinico;
@@ -203,6 +212,7 @@
             mensaje = "Debe agregar al menos un detalle de historial clínico.";
         }
     }
+
 
     private void AgregarDetalle()
     {

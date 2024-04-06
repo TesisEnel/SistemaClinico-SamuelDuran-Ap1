@@ -21,14 +21,14 @@ namespace ProyectoSistemaClinico.Services
             return true;
         }
 
-        public async Task<bool> ValidarHistorialClinicoDetalleExistente(int id)
+        public async Task<bool> ValidarHistorialClinicoDetalleExistente(int Id)
         {
-            return await _context.HistorialClinicoDetalle.AnyAsync(h => h.Id == id  );
+            return await _context.HistorialClinicoDetalle.AnyAsync(h => h.Id == Id  );
         }
 
-        public async Task<HistorialClinicoDetalle> ObtenerHistorialClinicoDetallePorId(int id)
+        public async Task<HistorialClinicoDetalle> ObtenerHistorialClinicoDetallePorId(int Id)
         {
-            return await _context.HistorialClinicoDetalle.FindAsync(id);
+            return await _context.HistorialClinicoDetalle.FindAsync(Id);
         }
 
         public async Task<bool> ModificarHistorialClinicoDetalle(HistorialClinicoDetalle historialClinicoDetalle)

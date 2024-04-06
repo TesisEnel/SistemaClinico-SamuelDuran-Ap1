@@ -35,6 +35,10 @@ namespace ProyectoSistemaClinico.Services
             return await _context.HistorialClinico.FindAsync(id);
         }
 
+
+
+     
+
         public async Task<bool> ModificarHistorialClinico(HistorialClinico historialClinico)
         {
             _context.Entry(historialClinico).State = EntityState.Modified;
@@ -44,10 +48,36 @@ namespace ProyectoSistemaClinico.Services
 
         public async Task<bool> Eliminar(HistorialClinico historialClinico)
         {
-            _context.HistorialClinico.Remove(historialClinico);
-            return await _context.SaveChangesAsync() > 0;
+            if (historialClinico == null)
+            {
+                throw new ArgumentNullException(nameof(historialClinico));
+            }
 
+            try
+            {
+                // Eliminar los detalles del historial clínico primero
+                if (historialClinico.HistorialClinicoDetalle != null && historialClinico.HistorialClinicoDetalle.Any())
+                {
+                    foreach (var detalle in historialClinico.HistorialClinicoDetalle)
+                    {
+                        _context.HistorialClinicoDetalle.Remove(detalle);
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
+                // Luego eliminar el historial clínico principal
+                _context.HistorialClinico.Remove(historialClinico);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception)
+            {
+                // Manejar cualquier excepción aquí si es necesario
+                return false;
+            }
         }
+
 
         public async Task<List<HistorialClinico>> ObtenerTodos()
         {
@@ -61,6 +91,8 @@ namespace ProyectoSistemaClinico.Services
                 .Where(criterio)
                 .ToListAsync();
         }
+
+
     }
 }
 
