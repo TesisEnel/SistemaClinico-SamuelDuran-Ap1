@@ -2,7 +2,7 @@
 
 @using Microsoft.AspNetCore.Authorization
 
-@attribute [Authorize]
+@attribute [Authorize(Roles ="Admin")]
 @rendermode InteractiveAuto
 
 <PageTitle>Auth</PageTitle>
@@ -101,5 +101,13 @@
 <AuthorizeView>
     <div class="hidden-content">
         User: @context.User.Identity?.Name
+    </div>
+</AuthorizeView>
+
+
+@attribute [Authorize(Roles = "Admin2")]
+<AuthorizeView Roles="Admin2">
+    <div class="hidden-content">
+        Eres Admin
     </div>
 </AuthorizeView>
