@@ -72,7 +72,7 @@
                             <tr>
                                 <td>@historial.HistorialClinicoId</td>
                                 <td>@historial.NombrePaciente</td>
-                                <td>@historial.FechaNacimiento.ToShortDateString()</td>
+                                <td>@historial.FechaNacimiento.ToString("dd/MM/yyyy")</td>
                                 <td>@historial.Direccion</td>
                                 <td>
                                     <a href="/editahistorialclinico/@historial.HistorialClinicoId" class="bi bi-pencil-square">

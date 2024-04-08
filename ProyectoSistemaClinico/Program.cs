@@ -39,7 +39,6 @@ namespace ProyectoSistemaClinico
             builder.Services.AddScoped<CitasService>();
             builder.Services.AddScoped<DoctorService>();
             builder.Services.AddScoped<HistorialClinicoService>();
-            builder.Services.AddScoped<HistorialClinicoDetalleService>();
 
            
 

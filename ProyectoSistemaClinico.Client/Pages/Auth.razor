@@ -2,7 +2,7 @@
 
 @using Microsoft.AspNetCore.Authorization
 
-@attribute [Authorize(Roles ="Admin")]
+@attribute [Authorize]
 @rendermode InteractiveAuto
 
 <PageTitle>Auth</PageTitle>
@@ -33,54 +33,112 @@
         .hidden-content {
             display: none;
         }
+
+        .border-blue {
+            border: 2px solid blue;
+            padding: 10px;
+        }
+
+       
+
+
+
     </style>
 
     </style>
 </head>
-<body>
-    <div class="container welcome-container">
-        <div class="d-flex justify-content-center">
-            <div style="max-width: 800px;">
-                <div class="logo text-center mb-4">
-                    <img src="Imagenes/firmar.png" class="icon" style="width: 150px; height: auto;" />
-                </div>
-                <h2 class="text-center mb-4">¡Estás Autenticado!</h2>
-                <div class="container registro-container">
-                    <div class="card-header text-center bg-primary">
-                        <h3 class="text-white"><strong>Sistema de Registro Clínico</strong></h3>
+
+
+
+
+</html>
+
+<AuthorizeView Roles="Admin">
+
+    <body>
+        <div class="container welcome-container">
+            <div class="d-flex justify-content-center">
+                <div style="max-width: 800px;">
+                    <div class="logo text-center mb-4">
+                        <img src="Imagenes/firmar.png" class="icon" style="width: 150px; height: auto;" />
                     </div>
-                    <div class="container">
-                        <div class="card-body">
-                            <div class="row justify-content-center mb-5">
-                                <!-- Registro de Citas -->
-                                <div class="col-md-4 text-center">
-                                    <div class="cuadro borde bg-white p-3">
-                                        <a href="/indexcita" class="d-block text-dark">
-                                            <h6 class="mb-0"><strong>Registro de Citas</strong></h6>
+                    <h2 class="text-center mb-4">¡Estás Autenticado!</h2>
+                    <div class="container registro-container">
+                        <div class="card-header text-center bg-primary">
+                            <h3 class="text-white"><strong>Sistema de Registro Clínico</strong></h3>
+                        </div>
+                        <div class="container">
+                            <div class="card-body">
+                                <div class="row justify-content-center mb-5">
+                                    <!-- Registro de Citas -->
+                                    <div class="col-md-8 text-center">
+                                        <div class="cuadro borde bg-white p-6">
+                                            <a href="/indexcita" class="d-block text-dark border-blue" style="width: 200px; height: 100px;">
+                                                <h6 class="mb-0"><strong>Registro de Citas</strong></h6>
+                                                <div class="logo">
+                                                    <img src="Imagenes/registrocitas.png" class="icon" style="width: 100px; height: auto; margin-right: 10px;" />
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                              
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <div class="hidden-content">
+        User: @context.User.Identity?.Name
+    </div>
+</AuthorizeView>
+
+
+<AuthorizeView Roles="Admin2">
+
+    <body>
+        <div class="container welcome-container">
+            <div class="d-flex justify-content-center">
+                <div style="max-width: 800px;">
+                    <div class="logo text-center mb-4">
+                        <img src="Imagenes/firmar.png" class="icon" style="width: 150px; height: auto;" />
+                    </div>
+                    <h2 class="text-center mb-4">¡Estás Autenticado!</h2>
+                    <div class="container registro-container">
+                        <div class="card-header text-center bg-primary">
+                            <h3 class="text-white"><strong>Sistema de Registro Clínico</strong></h3>
+                        </div>
+                        <div class="container">
+                            <div class="card-body">
+                                <div class="row justify-content-center mb-5">
+                                    <!-- Citas -->
+                                    <div class="col-md-4 text-center" style="margin-right: auto;">
+                                        <a href="/indexcitasdoctor" class="d-block text-dark border-blue" style="width: 180px; height: 80px; border: 2px solid #007bff;">
+                                            <h6 class="mb-0"><strong>Citas Registradas</strong></h6>
                                             <div class="logo">
-                                                <img src="Imagenes/registrocitas.png" class="icon" style="width: 100px; height: auto; margin-right: 10px;" />
+                                                <img src="Imagenes/registrocitas.png" class="icon" style="width: 80px; height: auto; margin-right: 10px;" />
                                             </div>
                                         </a>
                                     </div>
-                                </div>
-                                <!-- Registro de Doctores -->
-                                <div class="col-md-4 text-center">
-                                    <div class="cuadro borde bg-white p-3">
-                                        <a href="/indexdoctor" class="d-block text-dark">
+
+                                    <!-- Registro de Doctores -->
+                                    <div class="col-md-4 text-center" style="margin-right: auto;">
+                                        <a href="/indexdoctor" class="d-block text-dark" style="width: 180px; height: 80px; border: 2px solid #007bff;">
                                             <h6 class="mb-0"><strong>Registro de Doctores</strong></h6>
                                             <div class="logo">
-                                                <img src="Imagenes/equipo-medico.png" class="icon" style="width: 100px; height: auto; margin-right: 10px;" />
+                                                <img src="Imagenes/equipo-medico.png" class="icon" style="width: 80px; height: auto; margin-right: 10px;" />
                                             </div>
                                         </a>
                                     </div>
-                                </div>
-                                <!-- Registro de Historial Clínico -->
-                                <div class="col-md-4 text-center">
-                                    <div class="cuadro borde bg-white p-3">
-                                        <a href="/historialclinicoindex" class="d-block text-dark">
+                                    <!-- Registro de Historial Clínico -->
+                                    <div class="col-md-4 text-center" style="margin-right: auto;">
+                                        <a href="/historialclinicoindex" class="d-block text-dark" style="width: 180px; height: 80px; border: 2px solid #007bff;">
                                             <h6 class="mb-0"><strong>Registro de Historial Clínico</strong></h6>
                                             <div class="logo">
-                                                <img src="Imagenes/historial.png" class="icon" style="width: 100px; height: auto; margin-right: 10px;" />
+                                                <img src="Imagenes/historial.png" class="icon" style="width: 80px; height: auto; margin-right: 10px;" />
                                             </div>
                                         </a>
                                     </div>
@@ -91,23 +149,11 @@
                 </div>
             </div>
         </div>
-    </div>
-</body>
+    </body>
 
 
 
-</html>
-
-<AuthorizeView>
     <div class="hidden-content">
         User: @context.User.Identity?.Name
-    </div>
-</AuthorizeView>
-
-
-@attribute [Authorize(Roles = "Admin2")]
-<AuthorizeView Roles="Admin2">
-    <div class="hidden-content">
-        Eres Admin
     </div>
 </AuthorizeView>

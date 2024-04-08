@@ -41,7 +41,6 @@ namespace ProyectoSistemaClinico.Models
         [Display(Name = "Notas de Progreso y Seguimiento de Tratamientos Anteriores")]
         public string NotasProgresoSeguimiento { get; set; }
 
-        [ForeignKey("Id")]
         public ICollection<HistorialClinicoDetalle> HistorialClinicoDetalle { get; set; } = new List<HistorialClinicoDetalle>();
     }
 

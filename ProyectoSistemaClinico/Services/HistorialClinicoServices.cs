@@ -25,14 +25,14 @@ namespace ProyectoSistemaClinico.Services
             return true;
         }
 
-        public async Task<bool> ValidarHistorialClinicoExistente(int id, string nombrePaciente)
+        public async Task<bool> ValidarHistorialClinicoExistente( string nombrePaciente)
         {
-            return await _context.HistorialClinico.AnyAsync(h => h.HistorialClinicoId == id && h.NombrePaciente == nombrePaciente);
+            return await _context.HistorialClinico.AnyAsync(h => h.NombrePaciente == nombrePaciente);
         }
 
-        public async Task<HistorialClinico> ObtenerHistorialClinicoPorId(int id)
+        public async Task<HistorialClinico> ObtenerHistorialClinicoPorId(int HistorialClinicoId)
         {
-            return await _context.HistorialClinico.FindAsync(id);
+            return await _context.HistorialClinico.FindAsync(HistorialClinicoId);
         }
 
 
@@ -55,7 +55,6 @@ namespace ProyectoSistemaClinico.Services
 
             try
             {
-                // Eliminar los detalles del historial clínico primero
                 if (historialClinico.HistorialClinicoDetalle != null && historialClinico.HistorialClinicoDetalle.Any())
                 {
                     foreach (var detalle in historialClinico.HistorialClinicoDetalle)
@@ -65,7 +64,6 @@ namespace ProyectoSistemaClinico.Services
                     await _context.SaveChangesAsync();
                 }
 
-                // Luego eliminar el historial clínico principal
                 _context.HistorialClinico.Remove(historialClinico);
                 await _context.SaveChangesAsync();
 
@@ -73,7 +71,6 @@ namespace ProyectoSistemaClinico.Services
             }
             catch (Exception)
             {
-                // Manejar cualquier excepción aquí si es necesario
                 return false;
             }
         }

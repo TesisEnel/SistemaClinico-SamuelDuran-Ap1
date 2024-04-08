@@ -22,7 +22,7 @@ namespace ProyectoSistemaClinico.Services
         {
             if (await ExisteCita(cita))
             {
-                return false; // La cita ya existe
+                return false; 
             }
             else
             {

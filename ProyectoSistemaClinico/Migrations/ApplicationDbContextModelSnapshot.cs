@@ -330,7 +330,10 @@ namespace ProyectoSistemaClinico.Migrations
             modelBuilder.Entity("ProyectoSistemaClinico.Models.HistorialClinicoDetalle", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ConsumoAlcohol")
                         .IsRequired()
@@ -344,11 +347,16 @@ namespace ProyectoSistemaClinico.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("HistorialClinicoId")
+                        .HasColumnType("int");
+
                     b.Property<string>("OtraInformacionRelevante")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("HistorialClinicoId");
 
                     b.ToTable("HistorialClinicoDetalle");
                 });
@@ -408,9 +416,7 @@ namespace ProyectoSistemaClinico.Migrations
                 {
                     b.HasOne("ProyectoSistemaClinico.Models.HistorialClinico", null)
                         .WithMany("HistorialClinicoDetalle")
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HistorialClinicoId");
                 });
 
             modelBuilder.Entity("ProyectoSistemaClinico.Models.HistorialClinico", b =>

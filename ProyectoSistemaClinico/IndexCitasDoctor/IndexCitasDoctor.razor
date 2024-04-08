@@ -1,0 +1,118 @@
+﻿@page "/indexcitasdoctor"
+@using ProyectoSistemaClinico.Models
+@using System.Linq.Expressions
+@inject NavigationManager NavigationManager
+@using ProyectoSistemaClinico.Services;
+@inject CitasService CitasService
+
+<div class="card">
+    <div class="card-header text-center bg-primary">
+        <h3 class="text-white"><strong> Citas</strong></h3>
+    </div>
+
+    <div class="card-body">
+        <div>
+            <table class="table table-bordered text-center">
+
+                <thead>
+                    <tr>
+                        <th>Citas Id</th>
+                        <th>Nombre del Paciente</th>
+                        <th>Fecha y Hora</th>
+                        <th>Nombre del Médico</th>
+                        <th>Razón de la Cita</th>
+                       
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (ListaCitas.Any())
+                    {
+                        @foreach (var item in ListaCitas)
+                        {
+                            <tr>
+                                <td>@item.CitasId</td>
+                                <td>@item.NombrePaciente</td>
+                                <td>@item.FechaHora.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.NombreMedico</td>
+                                <td>@item.RazonCita</td>
+                               
+                                
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center"> <label>No hay citas disponibles</label> </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+
+            <div class="card-footer bg-light d-flex justify-content-end">
+                <div class="btn-group">
+                    <a type="button" href="/auth" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@code {
+    public string filtrar = "1", busqueda = "";
+    public DateTime? fechaDesde, fechaHasta;
+    public List<Citas> ListaCitas = new List<Citas>();
+    public Citas citas = new Citas();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarCitas();
+    }
+
+    public async Task Buscar()
+    {
+        if (!string.IsNullOrEmpty(busqueda))
+        {
+            switch (filtrar)
+            {
+                case "1":
+                    if (int.TryParse(busqueda, out int citaId))
+                    {
+                        ListaCitas = await CitasService.Listar(c => c.CitasId == citaId);
+                    }
+                    break;
+                case "2":
+                    ListaCitas = await CitasService.Listar(c => c.NombrePaciente.Contains(busqueda));
+                    break;
+                default:
+                    await CargarCitas();
+                    break;
+            }
+        }
+        else
+        {
+            await CargarCitas();
+        }
+    }
+
+    public async Task BuscarPorFecha()
+    {
+        if (fechaDesde != null && fechaHasta != null && fechaDesde <= fechaHasta)
+        {
+            ListaCitas = await CitasService.Listar(c => c.FechaHora >= fechaDesde && c.FechaHora <= fechaHasta);
+        }
+        else
+        {
+            await CargarCitas();
+        }
+    }
+
+    private async Task CargarCitas()
+    {
+        ListaCitas = await CitasService.Listar(c => true);
+    }
+}
+

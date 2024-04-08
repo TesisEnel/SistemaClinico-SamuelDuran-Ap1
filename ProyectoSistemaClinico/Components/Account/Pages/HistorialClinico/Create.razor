@@ -4,7 +4,6 @@
 
 @inject NavigationManager NavigationManager
 @inject HistorialClinicoService HistorialClinicoService
-@inject HistorialClinicoDetalleService HistorialClinicoDetalleService
 @inject CitasService citasService
 
 @rendermode InteractiveServer
@@ -182,15 +181,9 @@
 
 
 
-    private async Task Guardar()
+    public async Task Guardar()
     {
-        var historialExistente = await HistorialClinicoService.ValidarHistorialClinicoExistente( historialClinico.HistorialClinicoId, historialClinico.NombrePaciente);
-
-        if (historialExistente != null)
-        {
-            mensaje = "Ya existe un historial clínico registrado para este paciente.";
-            return;
-        }
+      
 
         if (listaDetallesHistorialClinico.Count > 0)
         {
@@ -212,6 +205,7 @@
             mensaje = "Debe agregar al menos un detalle de historial clínico.";
         }
     }
+
 
 
     private void AgregarDetalle()

@@ -4,6 +4,7 @@
 @inject NavigationManager NavigationManager
 @inject DoctorService DoctorService
 @rendermode InteractiveServer
+
 <EditForm Model="doctor" OnValidSubmit="Crear" FormName="doctorForm">
     <DataAnnotationsValidator />
 
@@ -68,6 +69,7 @@
             if (creado)
             {
                 mensaje = "El doctor se ha creado con éxito.";
+                 NavigationManager.NavigateTo("/indexdoctor");
             }
             else
             {
