@@ -4,8 +4,11 @@
 @inject NavigationManager NavigationManager
 @inject CitasService CitasService
 @inject DoctorService DoctorService
+@inject NotificationService notificationService
+
 
 @rendermode InteractiveServer
+<RadzenNotification />
 <EditForm Model="Cita" OnValidSubmit="Crear" FormName="citasForm">
 
     <div class="card shadow-lg">
@@ -60,14 +63,13 @@
 
         <div class="card-footer d-flex justify-content-center">
             <div class="btn-group">
-                <a type="button" href="/indexcita" class="btn btn-outline-primary"><span class="fas fa-arrow-left"></span> Volver </a>
+                <a type="button" href="/auth" class="btn btn-outline-primary"><span class="fas fa-arrow-left"></span> Volver </a>
             </div>
             <button type="submit" class="btn btn-outline-success">
                 <i class="bi bi-floppy-fill"></i> Crear
             </button>
         </div>
     </div>
-    <div>@mensaje</div>
 </EditForm>
 
 @code {
@@ -75,7 +77,6 @@
     public int DoctorId { get; set; }
 
     public Citas Cita { get; set; } = new Citas();
-    public string mensaje { get; set; } = string.Empty;
     public List<Doctor> Doctores { get; set; } = new List<Doctor>();
 
     protected override async Task OnInitializedAsync()
@@ -85,25 +86,34 @@
 
     private async Task Crear()
     {
-        mensaje = string.Empty;
 
         if (CamposValidos(Cita))
         {
             var insertado = await CitasService.Crear(Cita);
             if (insertado)
             {
-                mensaje = "La cita se ha creado con éxito";
-                await Task.Delay(2000);
+                var mensaje = new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Exito",
+                        Detail = "Se ha guardado correctamente",
+                        Duration = 4_000
+                    };
+                notificationService.Notify(mensaje);
             }
             else
             {
-                mensaje = "Esta hora de Citas esta Ocupada";
+                var mensaje = new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Error",
+                        Detail = "No se ha guardado correctamente",
+                        Duration = 4_000
+                    };
+                notificationService.Notify(mensaje);
             }
         }
-        else
-        {
-            mensaje = "Por favor, complete todos los campos requeridos.";
-        }
+      
 
     }
 

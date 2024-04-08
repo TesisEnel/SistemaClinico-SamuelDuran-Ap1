@@ -32,12 +32,14 @@ namespace ProyectoSistemaClinico.Services
 
         public async Task<HistorialClinico> ObtenerHistorialClinicoPorId(int HistorialClinicoId)
         {
-            return await _context.HistorialClinico.FindAsync(HistorialClinicoId);
+            return await _context.HistorialClinico
+              .Include(c => c.HistorialClinicoDetalle)
+              .FirstOrDefaultAsync(c => c.HistorialClinicoId == HistorialClinicoId);
         }
 
+        
 
 
-     
 
         public async Task<bool> ModificarHistorialClinico(HistorialClinico historialClinico)
         {

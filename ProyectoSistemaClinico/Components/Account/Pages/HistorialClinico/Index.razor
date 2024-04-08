@@ -11,7 +11,7 @@
         <h3 class="text-white"><strong> Historiales Clinicos</strong></h3>
     </div>
 
-    <div class="card-body">
+     <div class="card-body">
         <div class="col-8">
             <label class="fw-bold">Filtrar por Fecha:</label>
 
@@ -50,8 +50,9 @@
 </div>
 
        
-        <div>
-            <table class="table table-bordered text-center">
+ <div>
+    <div class="table-responsive" style="background-color: white;">
+        <table class="table table-bordered text-center" >
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -95,15 +96,23 @@
                             <td colspan="9" class="text-center"> <label>No hay historiales clínicos disponibles</label> </td>
                         </tr>
                     }
-                </tbody>
-            </table>
-        </div>
 
-    <div class="card-footer bg-light d-flex justify-content-end">
-        <div class="btn-group">
-            <a type="button" href="/auth" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver </a>
+              
+
+
+                </tbody>
+           
+            </table>
+
+        <div class="card-footer bg-light d-flex justify-content-end">
+            <div class="btn-group">
+                <a type="button" href="/auth" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver </a>
+            </div>
         </div>
     </div>
+</div>
+
+   
 
 @code {
     public string filtrar = "1", busqueda = "";

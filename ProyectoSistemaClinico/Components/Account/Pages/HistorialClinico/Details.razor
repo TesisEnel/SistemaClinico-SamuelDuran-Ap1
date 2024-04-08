@@ -11,10 +11,11 @@
 <div class="card-header text-center bg-primary">
     <h3 class="text-white"><strong>Historial Clinico</strong></h3>
 </div>
-
+ 
 @if (historialClinico != null)
  
 {
+     <div  style="background-color: white;">
       <table class="table table-bordered">
     <table class="table table-bordered">
             
@@ -69,51 +70,47 @@
 
         </table>
  
-    </table>
-
-
-
+      </table>
+  
     <div class="card-header text-center bg-primary">
         <h3 class="text-white"><strong>Detalles de Historial Clinico</strong></h3>
     </div>
-
-    if (detalleHistorialClinico != null)
-    {
-        <div class="mb-4"></div>
-
-        <div class="mb-4"></div>
-
-        <table class="table table-bordered text-center">
-            <thead class="bg-secondary text-white">
-                <tr>
-                    <th class="col-sm-2">ID</th>
-                    <th class="col-sm-2">Dieta</th>
-                    <th class="col-sm-2">Ejercicio Físico</th>
-                    <th class="col-sm-2">Consumo de Alcohol</th>
-                    <th class="col-sm-4">Otra Información Relevante</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="col-sm-2">@detalleHistorialClinico.Id</td>
-                    <td class="col-sm-2">@detalleHistorialClinico.Dieta</td>
-                    <td class="col-sm-2">@detalleHistorialClinico.EjercicioFisico</td>
-                    <td class="col-sm-2">@detalleHistorialClinico.ConsumoAlcohol</td>
-                    <td class="col-sm-4">@detalleHistorialClinico.OtraInformacionRelevante</td>
-                </tr>
-            </tbody>
-        </table>
-
-
-
-        
-    }
-    <div class="card-footer bg-light d-flex justify-content-end">
-        <div class="btn-group">
-            <a type="button" href="/historialclinicoindex" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver </a>
-        </div>
     </div>
+    @if (historialClinico.HistorialClinicoDetalle != null)
+    {
+        <div style="background-color: white;">
+            <table class="table table-bordered">
+                <thead class="bg-secondary text-white">
+                    <tr>
+                        <th>Dieta</th>
+                        <th>Ejercicio Fisico</th>
+                        <th>Consumo de Alcohol</th>
+                        <th>Otra Informacion Relevante</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detalle in historialClinico.HistorialClinicoDetalle)
+                    {
+                        <tr>
+                            <td>@detalle.Dieta</td>
+                            <td>@detalle.EjercicioFisico</td>
+                            <td>@detalle.ConsumoAlcohol</td>
+                            <td>@detalle.OtraInformacionRelevante</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="card-footer bg-light d-flex justify-content-end">
+                <div class="btn-group">
+                    <a type="button" href="/historialclinicoindex" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver </a>
+                </div>
+            </div>
 
+        </div>
+    }
+
+
+   
 
 }
 
@@ -137,26 +134,10 @@
     public async Task BuscarHistorialClinico()
     {
         historialClinico = await HistorialClinicoService.ObtenerHistorialClinicoPorId(HistorialClinicoId);
-        if (historialClinico != null)
-        {
-            await BuscarDetalleHistorialClinico(); 
-        }
+       
     }
 
-    public async Task BuscarDetalleHistorialClinico()
-    {
-        try
-        {
-            if (detalleHistorialClinico == null)
-            {
-                Console.WriteLine("No se encontraron detalles del historial clínico con el ID proporcionado.");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Se produjo un error al buscar detalles del historial clínico: " + ex.Message);
-        }
-    }
+   
 
 
 

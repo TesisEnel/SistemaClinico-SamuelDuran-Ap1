@@ -1,17 +1,21 @@
 ﻿@page "/createdoctor"
+@using Radzen.Blazor
 @using ProyectoSistemaClinico.Models
 @using ProyectoSistemaClinico.Services
 @inject NavigationManager NavigationManager
 @inject DoctorService DoctorService
-@rendermode InteractiveServer
+@inject NotificationService notificationService
 
+
+@rendermode InteractiveServer
+<RadzenNotification />
 <EditForm Model="doctor" OnValidSubmit="Crear" FormName="doctorForm">
     <DataAnnotationsValidator />
 
     <div class="card-header text-center bg-primary">
         <h3 class="text-white"><strong>Crear Nuevo Doctor</strong></h3>
     </div>
-
+    <div class="table-responsive" style="background-color: white;">
     <div class="card-body">
         <div class="row">
             <div class="col-md-6 mb-3">
@@ -44,6 +48,9 @@
         </div>
     </div>
 
+
+    </div>
+
     <div class="card-footer bg-light d-flex justify-content-end">
         <div class="btn-group">
             <a type="button" href="/indexdoctor" class="btn btn-outline-danger"><span class="fas fa-arrow-left"></span> Volver </a>
@@ -52,13 +59,11 @@
             <i class="bi bi-floppy-fill" /> Guardar
         </button>
     </div>
-    @mensaje
 </EditForm>
 
 @code {
     public Doctor doctor = new Doctor();
-        
-    public string mensaje = "";
+
 
     public async Task Crear()
     {
@@ -68,18 +73,29 @@
 
             if (creado)
             {
-                mensaje = "El doctor se ha creado con éxito.";
-                 NavigationManager.NavigateTo("/indexdoctor");
+                var mensaje = new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Exito",
+                        Detail = "Se ha guardado correctamente",
+                        Duration = 4_000
+                    };
+                notificationService.Notify(mensaje);
             }
             else
             {
-                mensaje = "No se pudo crear el doctor.";
+                var mensaje = new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Error",
+                        Detail = "No se ha guardado correctamente",
+                        Duration = 4_000
+                    };
+                notificationService.Notify(mensaje);
             }
         }
-        else
-        {
-            mensaje = "Los datos del doctor no son válidos.";
-        }
+
+
     }
 
     public async Task<bool> Validar()

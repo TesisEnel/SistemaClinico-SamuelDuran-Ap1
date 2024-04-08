@@ -5,8 +5,10 @@
 @inject NavigationManager NavigationManager
 @inject HistorialClinicoService HistorialClinicoService
 @inject CitasService citasService
-
+@inject NotificationService notificationService
 @rendermode InteractiveServer
+
+<RadzenNotification />
 <EditForm Model="historialClinico" OnValidSubmit="Guardar" FormName="HistorialClinicoForm">
     <DataAnnotationsValidator />
 
@@ -163,14 +165,12 @@
             <button type="submit" class="btn btn-outline-success"><i class="bi bi-floppy-fill"></i> Guardar</button>
         </div>
     </div>
-    @mensaje
 </EditForm>
 
 @code {
     private HistorialClinico historialClinico = new HistorialClinico();
     private HistorialClinicoDetalle detalleHistorialClinico = new HistorialClinicoDetalle();
     private List<HistorialClinicoDetalle> listaDetallesHistorialClinico = new List<HistorialClinicoDetalle>();
-    public string mensaje { get; set; } = string.Empty;
     public List<Citas> cita { get; set; } = new List<Citas>();
     public Citas Cita { get; set; } = new Citas();
 
@@ -183,29 +183,44 @@
 
     public async Task Guardar()
     {
-      
+
 
         if (listaDetallesHistorialClinico.Count > 0)
         {
-            historialClinico.HistorialClinicoDetalle = listaDetallesHistorialClinico;
+            historialClinico.HistorialClinicoDetalle = listaDetallesHistorialClinico.ToList();
             var creado = await HistorialClinicoService.CrearHistorialClinico(historialClinico);
 
             if (creado)
             {
-                mensaje = "El historial clínico se ha creado con éxito.";
-                NavigationManager.NavigateTo("/historialclinicoindex");
+                var mensaje = new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Exito",
+                        Detail = "Se ha guardado correctamente",
+                        Duration = 4_000
+                    };
+                notificationService.Notify(mensaje);
             }
+
             else
             {
-                mensaje = "No se pudo crear el historial clínico.";
+                var mensaje = new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Error",
+                        Detail = "No se ha guardado correctamente",
+                        Duration = 4_000
+                    };
+                notificationService.Notify(mensaje);
             }
+
         }
-        else
-        {
-            mensaje = "Debe agregar al menos un detalle de historial clínico.";
-        }
+
+       
+       
     }
 
+   
 
 
     private void AgregarDetalle()

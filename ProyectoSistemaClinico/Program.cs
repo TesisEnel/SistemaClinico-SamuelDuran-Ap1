@@ -6,6 +6,7 @@ using ProyectoSistemaClinico.Components;
 using ProyectoSistemaClinico.Components.Account;
 using ProyectoSistemaClinico.Data;
 using ProyectoSistemaClinico.Services;
+using Radzen;
 
 namespace ProyectoSistemaClinico
 {
@@ -39,8 +40,8 @@ namespace ProyectoSistemaClinico
             builder.Services.AddScoped<CitasService>();
             builder.Services.AddScoped<DoctorService>();
             builder.Services.AddScoped<HistorialClinicoService>();
+            builder.Services.AddScoped<NotificationService>();
 
-           
 
             builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
